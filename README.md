@@ -1,4 +1,4 @@
-# CUDA-with-Python
+# CUDA_C-CPP_with_Python
 Interfacing C/C++ CUDA code with Python
 
 Run demo as:
