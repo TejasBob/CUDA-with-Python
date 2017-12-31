@@ -11,23 +11,8 @@ __global__ void cuda_gray_kernel(unsigned char *b, unsigned char *g, unsigned ch
     
     gray[idx] = (unsigned char)(0.114f*b[idx] + 0.587f*g[idx] + 0.299f*r[idx] + 0.5);
 
-    //printf("idx: %lu %uc %uc %uc %uc\n\n", idx, b[idx], g[idx], r[idx], gray[idx]);
-
-    //gray[idx] = (int)(0.11*b[idx] + 0.59*g[idx] + 0.3*r[idx] + 0.5);
-    //printf("%f\t%d\n\n", 0.11*b[idx] + 0.59*g[idx] + 0.3*r[idx], (int)(0.11*b[idx] + 0.59*g[idx] + 0.3*r[idx]));
-
 }
 
-__global__ void cuda_filter_kernel(unsigned char *gray, float *filter, unsigned char *result, size_t rows, size_t columns, size_t filterWidth){
-    
-    size_t x = blockIdx.x * blockDim.x + threadIdx.x;
-    //size_t y = blockIdx.y * blockDim.y + threadIdx.y;
-    return;
-
-
-
-
-}
 
 extern "C" {
 void cuda_gray(unsigned char *a, unsigned char *b, unsigned char *c, unsigned char *d, size_t size)
@@ -65,41 +50,6 @@ void cuda_gray(unsigned char *a, unsigned char *b, unsigned char *c, unsigned ch
     cudaFree(d_b);
     cudaFree(d_c);
     cudaFree(d_d);
-}
-
-void cuda_filter(unsigned char *gray, float *filter, unsigned char *result, size_t rows, size_t columns, size_t filterWidth){
-    
-    size_t imageSize = rows * columns;
-    cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
-
-    unsigned char *d_gray, *d_result;
-    float *d_filter;
-
-    cudaMalloc((void **)&d_filter, filterWidth * sizeof(float));
-    cudaMalloc((void **)&d_gray, imageSize * sizeof(char));
-    cudaMalloc((void **)&d_result, imageSize * sizeof(char));
-
-    cudaMemcpy(d_gray, gray, imageSize * sizeof(char), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_result, result, imageSize * sizeof(char), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_filter, filter, filterWidth * sizeof(float), cudaMemcpyHostToDevice);
-
-    cudaEventRecord(start);
-    cuda_filter_kernel <<<    >>> (d_gray, d_filter, d_result, rows, columns, filterWidth);
-    cudaEventRecord(stop);
-    cudaEventSynchronize(stop);
-    float milliseconds = 0;
-    cudaEventElapsedTime(&milliseconds, start, stop);
-    printf("Time on GPU : %f msec\n", milliseconds);
-
-    cudaMemcpy(d_result, result , imageSize * sizeof(char), cudaMemcpyDeviceToHost);
-
-    cudaFree(d_gray);
-    cudaFree(d_filter);
-    cudaFree(d_result);
-
-
 }
 
 
